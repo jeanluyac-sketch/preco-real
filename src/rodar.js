@@ -94,7 +94,7 @@ export async function rodar({
   if (!fontes) {
     fontes = [];
     if (env.SHOPEE_APP_ID && env.SHOPEE_SECRET) fontes.push(criarShopee({ appId: env.SHOPEE_APP_ID, segredo: env.SHOPEE_SECRET, log }));
-    if (!fontes.length) throw new Error('Nenhuma fonte configurada: defina SHOPEE_APP_ID e SHOPEE_SECRET.');
+    if (!fontes.length) log('AVISO: nenhuma fonte configurada (faltam os secrets SHOPEE_APP_ID e SHOPEE_SECRET). Rodando sem coletar.');
   }
   if (telegram === undefined) telegram = env.TELEGRAM_TOKEN ? criarTelegram({ token: env.TELEGRAM_TOKEN }) : null;
 
