@@ -1,0 +1,35 @@
+{
+  "id": "pet",
+  "nome": "Pet",
+  "prioridade": 2,
+  "ativo": true,
+  "canalTelegram": "TELEGRAM_CANAL_PET",
+  "postsPorRodada": 2,
+  "excluir": ["umida", "sache", "saches", "lata", "petisco", "petiscos", "bifinho", "biscoito", "osso", "comedouro", "bebedouro", "pote", "caixa de areia", "banheiro", "pa para", "amostra", "brinquedo"],
+  "categorias": [
+    {
+      "id": "racao-caes", "nome": "Ração para cães",
+      "busca": ["ração cães adultos 15kg", "ração cachorro 10,1kg", "ração premium especial cães"],
+      "incluir": ["racao"], "exigir": ["cao", "caes", "cachorro", "cachorros", "dog", "dogs"],
+      "medida": "peso", "por": 1000, "faixa": [5, 120]
+    },
+    {
+      "id": "racao-gatos", "nome": "Ração para gatos",
+      "busca": ["ração gatos adultos 10,1kg", "ração gato castrado 10kg", "ração premium especial gatos"],
+      "incluir": ["racao"], "exigir": ["gato", "gatos", "felino", "felinos", "cat", "cats"],
+      "medida": "peso", "por": 1000, "faixa": [6, 150]
+    },
+    {
+      "id": "areia-gatos", "nome": "Areia para gatos",
+      "busca": ["areia higiênica gatos 12kg", "areia sílica gatos", "areia de madeira pellets gatos"],
+      "incluir": ["areia", "granulado"], "exigir": ["gato", "gatos", "felino", "higienica", "sanitaria"],
+      "medida": "peso", "por": 1000, "faixa": [1, 60],
+      "subtipos": [
+        { "id": "sílica", "padrao": "silica" },
+        { "id": "madeira", "padrao": "madeira|pellet|pinus" },
+        { "id": "bentonita", "padrao": "bentonita|argila|aglomerante" }
+      ]
+    }
+  ],
+  "marcasConfiaveis": []
+}

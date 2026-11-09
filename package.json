@@ -1,0 +1,1 @@
+{"type":"module","name":"radar-suplementos","private":true,"scripts":{"test":"node --test test/*.test.mjs","rodar":"node src/rodar.js"}}

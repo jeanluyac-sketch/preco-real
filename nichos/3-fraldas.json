@@ -1,0 +1,28 @@
+{
+  "id": "fraldas",
+  "nome": "Fraldas",
+  "prioridade": 3,
+  "ativo": true,
+  "canalTelegram": "TELEGRAM_CANAL_FRALDAS",
+  "postsPorRodada": 2,
+  "excluir": ["geriatrica", "adulto", "adultos", "pano", "ecologica", "reutilizavel", "lenco", "lencos", "umedecido", "trocador", "bolsa", "pomada", "pet", "caes", "cachorro", "fralda de banho", "piscina"],
+  "categorias": [
+    {
+      "id": "fralda", "nome": "Fralda infantil",
+      "busca": ["fralda pampers", "fralda huggies", "fralda turma da mônica", "fralda personal", "fralda pants"],
+      "incluir": ["fralda", "fraldas"],
+      "medida": "unidade", "por": 1, "rotulo": "fralda", "faixa": [0.25, 4],
+      "subtipos": [
+        { "id": "RN", "padrao": "\\brn\\b|recem nascido" },
+        { "id": "XXXG", "padrao": "\\bxxxg\\b|\\bxxxl\\b" },
+        { "id": "XXG", "padrao": "\\bxxg\\b|\\bxxl\\b" },
+        { "id": "XG", "padrao": "\\bxg\\b|\\bxl\\b" },
+        { "id": "G", "padrao": "\\bg\\b|tamanho g\\b" },
+        { "id": "M", "padrao": "\\bm\\b|tamanho m\\b" },
+        { "id": "P", "padrao": "\\bp\\b|tamanho p\\b" }
+      ],
+      "exigirSubtipo": true
+    }
+  ],
+  "marcasConfiaveis": []
+}
