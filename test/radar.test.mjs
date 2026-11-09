@@ -140,7 +140,7 @@ test('rodada completa: 3 nichos, posta só queda real, respeita limite por nicho
   const enviados = [];
   const telegram = { async enviar(canal, t) { enviados.push({ canal, t }); } };
   for (rodada = 1; rodada <= 9; rodada++) {
-    await rodar({ nichosDir: `${pasta}/nichos`, dadosDir: `${pasta}/dados`, siteDir: `${pasta}/site`, env, fontes: [fonte], telegram, agora: dia(rodada), log: () => {} });
+    await rodar({ nichosDir: `${pasta}/nichos`, dadosDir: `${pasta}/dados`, siteDir: `${pasta}/site`, painelArq: `${pasta}/metricas.csv`, env, fontes: [fonte], telegram, agora: dia(rodada), log: () => {} });
   }
   assert.equal(enviados.length, 1);
   assert.equal(enviados[0].canal, '@sup');
@@ -154,7 +154,7 @@ test('rodada completa: 3 nichos, posta só queda real, respeita limite por nicho
   assert.ok(html.indexOf('id="pet"') < html.indexOf('id="fraldas"'));
   assert.match(html, /R\$\s?1,25/);
   // rodar de novo no mesmo dia não repete o post
-  await rodar({ nichosDir: `${pasta}/nichos`, dadosDir: `${pasta}/dados`, siteDir: `${pasta}/site`, env, fontes: [fonte], telegram, agora: new Date('2026-11-09T18:00:00Z'), log: () => {} });
+  await rodar({ nichosDir: `${pasta}/nichos`, dadosDir: `${pasta}/dados`, siteDir: `${pasta}/site`, painelArq: `${pasta}/metricas.csv`, env, fontes: [fonte], telegram, agora: new Date('2026-11-09T18:00:00Z'), log: () => {} });
   assert.equal(enviados.length, 1);
 });
 
@@ -174,7 +174,7 @@ test('páginas por produto, sitemap e métricas diárias', async () => {
   const fonte = { async buscar() { return [{ id: 'shopee:77', loja: 'Shopee', titulo: 'Creatina Monohidratada 250g Dux', preco: d === 4 ? 70 : 80, vendas: 500, nota: 4.9, vendedor: 'A', link: 'https://s.shopee.com.br/77' }]; } };
   const telegram = { async enviar() {}, async membros() { return 42; } };
   const env = { TELEGRAM_CANAL_SUPLEMENTOS: '@sup', SITE_URL: 'https://ex.github.io/preco-real/' };
-  for (d = 1; d <= 4; d++) await rodar({ nichosDir: `${pasta}/nichos`, dadosDir: `${pasta}/dados`, siteDir: `${pasta}/site`, env, fontes: [fonte], telegram, agora: dia(d), log: () => {} });
+  for (d = 1; d <= 4; d++) await rodar({ nichosDir: `${pasta}/nichos`, dadosDir: `${pasta}/dados`, siteDir: `${pasta}/site`, painelArq: `${pasta}/metricas.csv`, env, fontes: [fonte], telegram, agora: dia(d), log: () => {} });
   const pags = readdirSync(`${pasta}/site/p`);
   assert.deepEqual(pags, ['creatina-monohidratada-250g-dux-77.html']);
   const html = readFileSync(`${pasta}/site/p/${pags[0]}`, 'utf8');
@@ -188,6 +188,12 @@ test('páginas por produto, sitemap e métricas diárias', async () => {
   assert.equal(csv.length, 1 + 4 * 3);
   assert.ok(csv.includes('2026-11-04,suplementos,1,0,0,42,,'));
   assert.ok(csv.includes('2026-11-04,pet,0,0,0,,,'));
+  const painel = readFileSync(`${pasta}/metricas.csv`, 'utf8').trim().split('\n');
+  assert.equal(painel[0], 'data,metrica,valor,ref');
+  assert.ok(painel.includes('2026-11-04,inscritos,42,suplementos'));
+  assert.ok(painel.includes('2026-11-04,anuncios_validos,1,suplementos'));
+  assert.ok(painel.includes('2026-11-01,posts,0,fraldas'));
+  assert.ok(!painel.some((l) => l.includes('inscritos') && l.endsWith(',pet'))); // pet sem canal no teste
 });
 
 test('métricas: rodadas do mesmo dia somam posts', async () => {

@@ -9,7 +9,7 @@ import { montarPost, criarTelegram } from './telegram.js';
 import { montarPagina } from './pagina.js';
 import { criarShopee } from './shopee.js';
 import { paginaProduto, produtosComPagina, slug, sitemap } from './paginasProduto.js';
-import { atualizarMetricas } from './metricas.js';
+import { atualizarMetricas, acrescentarPainel, dataBrasilia } from './metricas.js';
 import { CSS } from './pagina.js';
 
 const lerJson = (p, padrao) => (existsSync(p) ? JSON.parse(readFileSync(p, 'utf8')) : padrao);
@@ -94,6 +94,7 @@ export async function rodar({
   nichosDir = 'nichos',
   dadosDir = 'dados',
   siteDir = 'site',
+  painelArq = 'metricas.csv',
   env = process.env,
   fontes,
   telegram,
@@ -142,8 +143,9 @@ export async function rodar({
   writeFileSync(`${siteDir}/robots.txt`, `User-agent: *\nAllow: /\nSitemap: ${site}sitemap.xml\n`);
   writeFileSync(`${siteDir}/index.html`, montarPagina({ nichos: resultados, agora }));
 
-  const data = agora.toISOString().slice(0, 10);
+  const data = dataBrasilia(agora);
   atualizarMetricas(`${dadosDir}/metricas.csv`, resultados.map((r) => ({ data, nicho: r.nicho.id, ...r.metricas })));
+  acrescentarPainel(painelArq, `${dadosDir}/metricas.csv`, data, resultados.map((r) => r.nicho.id));
   return resultados;
 }
 

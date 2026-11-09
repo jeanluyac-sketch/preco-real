@@ -34,7 +34,7 @@ jobs:
         run: |
           git config user.name "radar-bot"
           git config user.email "radar-bot@users.noreply.github.com"
-          git add dados/
+          git add dados/ metricas.csv
           git diff --cached --quiet || git commit -m "precos: $(date -u +%FT%H%M)"
           git push
       - uses: actions/upload-pages-artifact@v3
