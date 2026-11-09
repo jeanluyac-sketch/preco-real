@@ -30,5 +30,10 @@ export function criarTelegram({ token, fetchFn = fetch }) {
       const j = await r.json();
       if (!j.ok) throw new Error(`Telegram: ${j.description}`);
     },
+    async membros(canal) {
+      const r = await fetchFn(`https://api.telegram.org/bot${token}/getChatMemberCount?chat_id=${encodeURIComponent(canal)}`);
+      const j = await r.json();
+      return j.ok ? j.result : null;
+    },
   };
 }

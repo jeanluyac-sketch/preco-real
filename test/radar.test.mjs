@@ -165,3 +165,35 @@ test('boas-vindas: texto por nicho com link do ranking', async () => {
   assert.match(t, /Ração para cães: preço por kg/);
   assert.match(t, /preco-real\/#pet/);
 });
+
+test('páginas por produto, sitemap e métricas diárias', async () => {
+  const { readdirSync } = await import('node:fs');
+  const pasta = mkdtempSync(`${tmpdir()}/radar-pp-`);
+  cpSync('nichos', `${pasta}/nichos`, { recursive: true });
+  let d = 0;
+  const fonte = { async buscar() { return [{ id: 'shopee:77', loja: 'Shopee', titulo: 'Creatina Monohidratada 250g Dux', preco: d === 4 ? 70 : 80, vendas: 500, nota: 4.9, vendedor: 'A', link: 'https://s.shopee.com.br/77' }]; } };
+  const telegram = { async enviar() {}, async membros() { return 42; } };
+  const env = { TELEGRAM_CANAL_SUPLEMENTOS: '@sup', SITE_URL: 'https://ex.github.io/preco-real/' };
+  for (d = 1; d <= 4; d++) await rodar({ nichosDir: `${pasta}/nichos`, dadosDir: `${pasta}/dados`, siteDir: `${pasta}/site`, env, fontes: [fonte], telegram, agora: dia(d), log: () => {} });
+  const pags = readdirSync(`${pasta}/site/p`);
+  assert.deepEqual(pags, ['creatina-monohidratada-250g-dux-77.html']);
+  const html = readFileSync(`${pasta}/site/p/${pags[0]}`, 'utf8');
+  assert.match(html, /<title>Creatina Monohidratada 250g Dux: histórico de preço por 100 g<\/title>/);
+  assert.match(html, /<polyline/);
+  assert.match(html, /menor preço que já registramos/);
+  assert.match(readFileSync(`${pasta}/site/sitemap.xml`, 'utf8'), /preco-real\/p\/creatina-monohidratada-250g-dux-77\.html/);
+  assert.match(readFileSync(`${pasta}/site/index.html`, 'utf8'), /href="p\/creatina-monohidratada-250g-dux-77\.html">histórico de preço/);
+  const csv = readFileSync(`${pasta}/dados/metricas.csv`, 'utf8').trim().split('\n');
+  assert.equal(csv[0], 'data,nicho,anuncios,ofertas,posts,inscritos,cliques,comissao');
+  assert.equal(csv.length, 1 + 4 * 3);
+  assert.ok(csv.includes('2026-11-04,suplementos,1,0,0,42,,'));
+  assert.ok(csv.includes('2026-11-04,pet,0,0,0,,,'));
+});
+
+test('métricas: rodadas do mesmo dia somam posts', async () => {
+  const { atualizarMetricas } = await import('../src/metricas.js');
+  const arq = `${mkdtempSync(`${tmpdir()}/m-`)}/m.csv`;
+  atualizarMetricas(arq, [{ data: '2026-11-09', nicho: 'pet', anuncios: 10, ofertas: 1, posts: 1, inscritos: 5 }]);
+  atualizarMetricas(arq, [{ data: '2026-11-09', nicho: 'pet', anuncios: 8, ofertas: 2, posts: 2, inscritos: null }]);
+  assert.equal(readFileSync(arq, 'utf8'), 'data,nicho,anuncios,ofertas,posts,inscritos,cliques,comissao\n2026-11-09,pet,10,2,3,5,,\n');
+});

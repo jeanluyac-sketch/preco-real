@@ -2,7 +2,7 @@
 import { reais, esc } from './telegram.js';
 import { rotuloUnidade, rotuloQuantidade } from './produto.js';
 
-const CSS = `:root{--bg:#fbfaf7;--fg:#1d1d1b;--muted:#6b6a65;--line:#e4e1d8;--accent:#0b7a4b;--card:#fff}
+export const CSS = `:root{--bg:#fbfaf7;--fg:#1d1d1b;--muted:#6b6a65;--line:#e4e1d8;--accent:#0b7a4b;--card:#fff}
 @media (prefers-color-scheme:dark){:root{--bg:#161614;--fg:#eceae4;--muted:#a3a19a;--line:#2f2e2a;--accent:#4cc38a;--card:#1f1f1c}}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,sans-serif}
 main{max-width:860px;margin:0 auto;padding:24px 16px 64px}h1{font-size:1.6rem;margin:0 0 4px}h2{margin:40px 0 4px;font-size:1.3rem}h3{margin:24px 0 8px;font-size:1.05rem}
@@ -21,7 +21,7 @@ export function montarPagina({ nichos, agora }) {
       : '<p class="muted">Nenhuma queda real de preço nesta rodada.</p>';
     const tabelas = rankings.map(({ cat, itens }) => `<h3>${esc(cat.nome)}: mais barato por ${rotuloUnidade(cat)}</h3>
 <table><tr><th>Produto</th><th class="tam">Tamanho</th><th class="n">Preço</th><th class="n">Por ${rotuloUnidade(cat).replace(' ', '&nbsp;')}</th></tr>
-${itens.map((p) => `<tr><td><a href="${esc(p.link)}" rel="sponsored nofollow">${esc(p.titulo)}</a><div class="muted">${esc(p.loja)} · ${rotuloQuantidade(cat, p.quantidade)}${p.subtipo ? ` · ${esc(p.subtipo)}` : ''}</div></td><td class="tam">${rotuloQuantidade(cat, p.quantidade)}</td><td class="n">${reais(p.preco)}</td><td class="n"><b>${reais(p.pu)}</b></td></tr>`).join('\n')}
+${itens.map((p) => `<tr><td><a href="${esc(p.link)}" rel="sponsored nofollow">${esc(p.titulo)}</a><div class="muted">${esc(p.loja)} · ${rotuloQuantidade(cat, p.quantidade)}${p.subtipo ? ` · ${esc(p.subtipo)}` : ''}${p.pagina ? ` · <a href="${esc(p.pagina)}">histórico de preço</a>` : ''}</div></td><td class="tam">${rotuloQuantidade(cat, p.quantidade)}</td><td class="n">${reais(p.preco)}</td><td class="n"><b>${reais(p.pu)}</b></td></tr>`).join('\n')}
 </table>`).join('\n');
     return `<section id="${esc(nicho.id)}"><h2>${esc(nicho.nome)}</h2><h3>Ofertas reais agora</h3>${ofs}${tabelas}</section>`;
   });

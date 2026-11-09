@@ -8,6 +8,9 @@ import { ehOfertaReal, escolherPosts, ranking } from './oferta.js';
 import { montarPost, criarTelegram } from './telegram.js';
 import { montarPagina } from './pagina.js';
 import { criarShopee } from './shopee.js';
+import { paginaProduto, produtosComPagina, slug, sitemap } from './paginasProduto.js';
+import { atualizarMetricas } from './metricas.js';
+import { CSS } from './pagina.js';
 
 const lerJson = (p, padrao) => (existsSync(p) ? JSON.parse(readFileSync(p, 'utf8')) : padrao);
 const REGRA = { diasMinimosDeHistorico: 7, quedaMinima: 0.1, naoRepetirPorDias: 7 };
@@ -59,6 +62,7 @@ export async function rodarNicho({ nicho, fontes, telegram, env, dadosDir, agora
   // 3. Posta as melhores quedas (limite por nicho = hierarquia)
   const escolhidos = escolherPosts(candidatos, postados, agora, { ...REGRA, postsPorRodada: nicho.postsPorRodada });
   const canal = env[nicho.canalTelegram];
+  let postsFeitos = 0;
   for (const c of escolhidos) {
     if (!telegram || !canal) {
       log(`[${nicho.id}] (sem Telegram configurado) post seria:\n${montarPost(c)}`);
@@ -67,6 +71,7 @@ export async function rodarNicho({ nicho, fontes, telegram, env, dadosDir, agora
     try {
       await telegram.enviar(canal, montarPost(c));
       postados[c.produto.id] = agora.toISOString();
+      postsFeitos++;
     } catch (e) {
       log(`[${nicho.id}] Telegram falhou: ${e.message}`);
     }
@@ -74,8 +79,12 @@ export async function rodarNicho({ nicho, fontes, telegram, env, dadosDir, agora
 
   writeFileSync(histArq, JSON.stringify(hist));
   writeFileSync(postArq, JSON.stringify(postados, null, 1));
+  let inscritos = null;
+  if (telegram?.membros && canal) inscritos = await telegram.membros(canal).catch(() => null);
   return {
     nicho,
+    hist,
+    metricas: { anuncios: produtos.length, ofertas: candidatos.length, posts: postsFeitos, inscritos },
     ofertas: candidatos.sort((a, b) => b.oferta.queda - a.oferta.queda).slice(0, 6),
     rankings: nicho.categorias.map((cat) => ({ cat, itens: ranking(produtos, cat.id, 10) })),
   };
@@ -112,7 +121,29 @@ export async function rodar({
       log(`[${nicho.id}] rodada falhou: ${e.stack || e.message}`);
     }
   }
+  // Páginas por produto (histórico) + sitemap
+  const site = env.SITE_URL || 'https://jeanluyac-sketch.github.io/preco-real/';
+  mkdirSync(`${siteDir}/p`, { recursive: true });
+  const urls = [site];
+  const paginas = new Set();
+  for (const r of resultados) {
+    const cats = Object.fromEntries(r.nicho.categorias.map((c) => [c.id, c]));
+    for (const [id, h] of produtosComPagina(r.hist, agora)) {
+      const cat = cats[h.categoria];
+      if (!cat) continue;
+      const s = slug(id, h);
+      writeFileSync(`${siteDir}/p/${s}.html`, paginaProduto({ id, h, cat, nicho: r.nicho, css: CSS, site }));
+      urls.push(`${site}p/${s}.html`);
+      paginas.add(id);
+    }
+  }
+  for (const r of resultados) for (const rk of r.rankings) for (const p of rk.itens) if (paginas.has(p.id)) p.pagina = `p/${slug(p.id, r.hist[p.id])}.html`;
+  writeFileSync(`${siteDir}/sitemap.xml`, sitemap(urls));
+  writeFileSync(`${siteDir}/robots.txt`, `User-agent: *\nAllow: /\nSitemap: ${site}sitemap.xml\n`);
   writeFileSync(`${siteDir}/index.html`, montarPagina({ nichos: resultados, agora }));
+
+  const data = agora.toISOString().slice(0, 10);
+  atualizarMetricas(`${dadosDir}/metricas.csv`, resultados.map((r) => ({ data, nicho: r.nicho.id, ...r.metricas })));
   return resultados;
 }
 
