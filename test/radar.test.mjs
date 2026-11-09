@@ -157,3 +157,11 @@ test('rodada completa: 3 nichos, posta só queda real, respeita limite por nicho
   await rodar({ nichosDir: `${pasta}/nichos`, dadosDir: `${pasta}/dados`, siteDir: `${pasta}/site`, env, fontes: [fonte], telegram, agora: new Date('2026-11-09T18:00:00Z'), log: () => {} });
   assert.equal(enviados.length, 1);
 });
+
+test('boas-vindas: texto por nicho com link do ranking', async () => {
+  const { textoBoasVindas } = await import('../src/boasvindas.js');
+  const t = textoBoasVindas(N.pet, 'https://x.github.io/preco-real/');
+  assert.match(t, /Preço Real Pet/);
+  assert.match(t, /Ração para cães: preço por kg/);
+  assert.match(t, /preco-real\/#pet/);
+});
