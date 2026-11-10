@@ -8,3 +8,20 @@ Robô que acompanha preços de **suplementos** (creatina e whey), **pet** (raç�
 - Roda 4 vezes por dia no GitHub Actions (`.github/workflows/rodada.yml`) e publica a página no GitHub Pages.
 
 Testes: `npm test`. Rodada local: `SHOPEE_APP_ID=... SHOPEE_SECRET=... npm run rodar` (sem Telegram, só mostra os posts no terminal).
+
+## Produtos dos vídeos (`videos.json`)
+O canal de vídeos acrescenta uma entrada por vídeo publicado; a página `videos.html` é regerada a cada rodada.
+```json
+[
+  {
+    "id": "014-gato-agua",
+    "titulo": "Por que gatos preferem água corrente",
+    "data": "2026-11-12",
+    "link": "https://youtube.com/shorts/...",
+    "produtos": [
+      { "nicho": "pet", "categoria": "fonte-agua", "rotulo": "Fonte de água", "palavras": ["inox"] }
+    ]
+  }
+]
+```
+`categoria` é um `id` de `nichos/*.json` (pet: racao-caes, racao-gatos, areia-gatos, petisco, fonte-agua, arranhador, brinquedo). `palavras` (opcional) filtra anúncios que tenham todas essas palavras no título; `rotulo` (opcional) é o título do bloco.

@@ -27,7 +27,13 @@ Trocar a ordem, o limite de posts ou criar um 4º nicho é editar um arquivo em 
 - A partir do dia 8: começam os posts. O canal precisa de gente: divulgar o link do canal nos vídeos curtos e no Pinterest é o que traz público.
 - Não testei contra a API real daqui (a nuvem bloqueia Shopee e Mercado Livre). A primeira rodada no GitHub vai confirmar os nomes dos campos; se algo vier diferente, o ajuste é pequeno.
 
-## Regras do plano geral (revisão de 2026-11-09)
+## Plano diretor v2 (2026-11-10)
+- Os vídeos curtos são o foco do projeto, e o Preço Real vira o "balcão" deles. **Pet é o nicho 1** (a decisão final está com o usuário; trocar a ordem é renomear os arquivos em `nichos/`).
+- O catálogo pet agora inclui fonte de água, arranhador, petisco e brinquedos, além de ração e areia. Acessórios são comparados por unidade e ordenados pelos mais vendidos, porque o mais barato costuma ser o pior.
+- A página **Produtos dos vídeos** (`site/videos.html`) é o link da bio. Ela lê o `videos.json`, que o canal de vídeos preenche (o formato está no README), e para cada vídeo mostra as melhores opções de hoje, o menor preço já visto, o histórico e o link de afiliado.
+- O Telegram de pet recebe as quedas reais. Suplementos e fraldas continuam rodando, mas sem divulgação.
+
+## Regras do plano geral (revisão de 2026-11-09, em parte substituída pela v2 acima)
 - O Preço Real é a **prioridade 2** do projeto Renda.
 - Os 3 robôs seguem rodando, mas **toda a divulgação vai só para Suplementos** até o canal passar de **500 inscritos**.
 - O site tem **uma página por produto** com o gráfico do histórico de preço ("Creatina X 250 g: histórico de preço por 100 g"), mais `sitemap.xml` e `robots.txt`, pensando na busca do Google. A página só aparece para o produto que tiver pelo menos 3 dias de histórico.

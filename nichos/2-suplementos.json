@@ -1,0 +1,87 @@
+{
+  "id": "suplementos",
+  "nome": "Suplementos",
+  "prioridade": 2,
+  "ativo": true,
+  "canalTelegram": "TELEGRAM_CANAL_SUPLEMENTOS",
+  "postsPorRodada": 2,
+  "excluir": [
+    "capsula",
+    "capsulas",
+    "caps",
+    "gummy",
+    "gummies",
+    "goma",
+    "gomas",
+    "barra",
+    "barrinha",
+    "coqueteleira",
+    "pre treino",
+    "pre-treino",
+    "pretreino",
+    "bcaa",
+    "glutamina",
+    "hipercalorico",
+    "amostra",
+    "sache",
+    "saches",
+    "dose unica",
+    "camiseta"
+  ],
+  "categorias": [
+    {
+      "id": "creatina",
+      "nome": "Creatina",
+      "busca": [
+        "creatina monohidratada",
+        "creatina 300g",
+        "creatina 1kg",
+        "creatina creapure"
+      ],
+      "incluir": [
+        "creatina",
+        "creatine"
+      ],
+      "medida": "peso",
+      "por": 100,
+      "faixa": [
+        4,
+        80
+      ]
+    },
+    {
+      "id": "whey",
+      "nome": "Whey",
+      "busca": [
+        "whey protein concentrado",
+        "whey protein isolado",
+        "whey protein 900g",
+        "whey protein refil 1kg"
+      ],
+      "incluir": [
+        "whey"
+      ],
+      "medida": "peso",
+      "por": 100,
+      "faixa": [
+        3,
+        60
+      ],
+      "subtipos": [
+        {
+          "id": "isolado",
+          "padrao": "isolad|isolate|\\biso\\b"
+        },
+        {
+          "id": "blend",
+          "padrao": "3w|blend|3 tipos|tres tipos"
+        },
+        {
+          "id": "concentrado",
+          "padrao": "concentrad|concentrate|\\bwpc\\b"
+        }
+      ]
+    }
+  ],
+  "marcasConfiaveis": []
+}

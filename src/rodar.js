@@ -11,6 +11,7 @@ import { criarShopee } from './shopee.js';
 import { paginaProduto, produtosComPagina, slug, sitemap } from './paginasProduto.js';
 import { atualizarMetricas, acrescentarPainel, dataBrasilia } from './metricas.js';
 import { CSS } from './pagina.js';
+import { montarPaginaVideos } from './paginaVideos.js';
 
 const lerJson = (p, padrao) => (existsSync(p) ? JSON.parse(readFileSync(p, 'utf8')) : padrao);
 const REGRA = { diasMinimosDeHistorico: 7, quedaMinima: 0.1, naoRepetirPorDias: 7 };
@@ -86,7 +87,8 @@ export async function rodarNicho({ nicho, fontes, telegram, env, dadosDir, agora
     hist,
     metricas: { anuncios: produtos.length, ofertas: candidatos.length, posts: postsFeitos, inscritos },
     ofertas: candidatos.sort((a, b) => b.oferta.queda - a.oferta.queda).slice(0, 6),
-    rankings: nicho.categorias.map((cat) => ({ cat, itens: ranking(produtos, cat.id, 10) })),
+    rankings: nicho.categorias.map((cat) => ({ cat, itens: ranking(produtos, cat.id, 10, cat.ranking) })),
+    produtos,
   };
 }
 
@@ -95,6 +97,7 @@ export async function rodar({
   dadosDir = 'dados',
   siteDir = 'site',
   painelArq = 'metricas.csv',
+  videosArq = 'videos.json',
   env = process.env,
   fontes,
   telegram,
@@ -138,10 +141,12 @@ export async function rodar({
       paginas.add(id);
     }
   }
-  for (const r of resultados) for (const rk of r.rankings) for (const p of rk.itens) if (paginas.has(p.id)) p.pagina = `p/${slug(p.id, r.hist[p.id])}.html`;
-  writeFileSync(`${siteDir}/sitemap.xml`, sitemap(urls));
+  for (const r of resultados) for (const p of r.produtos) if (paginas.has(p.id)) p.pagina = `p/${slug(p.id, r.hist[p.id])}.html`;
   writeFileSync(`${siteDir}/robots.txt`, `User-agent: *\nAllow: /\nSitemap: ${site}sitemap.xml\n`);
   writeFileSync(`${siteDir}/index.html`, montarPagina({ nichos: resultados, agora }));
+  writeFileSync(`${siteDir}/videos.html`, montarPaginaVideos({ videos: lerJson(videosArq, []), resultados, css: CSS, agora }));
+  urls.push(`${site}videos.html`);
+  writeFileSync(`${siteDir}/sitemap.xml`, sitemap(urls));
 
   const data = dataBrasilia(agora);
   atualizarMetricas(`${dadosDir}/metricas.csv`, resultados.map((r) => ({ data, nicho: r.nicho.id, ...r.metricas })));

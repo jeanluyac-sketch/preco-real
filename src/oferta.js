@@ -21,11 +21,12 @@ export function escolherPosts(candidatos, postados, agora, regra) {
 }
 
 // Ranking do dia: os mais baratos por unidade de medida de cada categoria, um anúncio por vendedor.
-export function ranking(produtos, categoria, n = 10) {
+// Em categorias "por vendas" (acessórios, brinquedos) o mais barato costuma ser o pior: ordena pelos mais vendidos.
+export function ranking(produtos, categoria, n = 10, ordem = 'preco') {
   const vistos = new Set();
   return produtos
     .filter((p) => p.categoria === categoria)
-    .sort((a, b) => a.pu - b.pu)
+    .sort(ordem === 'vendas' ? (a, b) => (b.vendas || 0) - (a.vendas || 0) || a.pu - b.pu : (a, b) => a.pu - b.pu)
     .filter((p) => {
       const chave = `${p.loja}|${p.vendedor}`;
       if (vistos.has(chave)) return false;

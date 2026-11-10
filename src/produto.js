@@ -1,5 +1,5 @@
 // Entende o título de um anúncio dentro de um nicho: qual categoria, qual tamanho,
-// qual quantidade total e quanto custa por unidade de medida (100 g, kg ou fralda).
+// qual quantidade total e quanto custa por unidade de medida (100 g, kg, fralda ou unidade do produto).
 // Na dúvida devolve null e o anúncio fica de fora: melhor perder uma oferta do que postar errado.
 
 const LB = 453.592;
@@ -51,7 +51,7 @@ export function embalagens(titulo, medida) {
     t.match(/\bkit\s*(?:com\s*)?(\d{1,2})\b(?!\s*(?:un|unidades|fraldas|g|kg))/) ||
     t.match(/\b(\d{1,2})\s*(?:pacotes|pcts?|potes|embalagens|sacos)\b/) ||
     t.match(/\b(\d{1,2})\s*x\s*\d/) ||
-    (medida === 'peso' ? t.match(/\b(\d{1,2})\s*(?:unidades|un)\b/) : null);
+    (medida !== 'unidade' ? t.match(/\b(\d{1,2})\s*(?:unidades|un)\b/) : null);
   const n = m ? Number(m[1]) : 1;
   return n >= 1 && n <= 12 ? n : 1;
 }
@@ -62,7 +62,7 @@ export function analisar({ titulo, preco }, nicho) {
   if (!cat) return null;
   const subtipo = subtipoDe(titulo, cat);
   if (cat.exigirSubtipo && !subtipo) return null;
-  const porEmbalagem = cat.medida === 'peso' ? gramas(titulo) : itens(titulo);
+  const porEmbalagem = cat.medida === 'peso' ? gramas(titulo) : cat.medida === 'item' ? 1 : itens(titulo);
   if (!porEmbalagem) return null;
   const quantidade = porEmbalagem * embalagens(titulo, cat.medida);
   const pu = Math.round((preco / quantidade) * cat.por * 100) / 100;
@@ -78,11 +78,12 @@ export function marcaConfiavel(titulo, marcas) {
 
 // Texto da unidade: "100 g", "kg", "fralda".
 export function rotuloUnidade(cat) {
-  if (cat.medida === 'unidade') return cat.rotulo || 'unidade';
+  if (cat.medida === 'unidade' || cat.medida === 'item') return cat.rotulo || 'unidade';
   return cat.por === 1000 ? 'kg' : `${cat.por} g`;
 }
 
 export function rotuloQuantidade(cat, q) {
+  if (cat.medida === 'item') return q > 1 ? `kit com ${q}` : '1 unidade';
   if (cat.medida === 'unidade') return `${q} ${cat.rotulo || 'unidade'}${q > 1 ? 's' : ''}`;
   return q >= 1000 ? `${(q / 1000).toLocaleString('pt-BR')} kg` : `${q} g`;
 }

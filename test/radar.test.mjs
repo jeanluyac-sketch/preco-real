@@ -13,7 +13,7 @@ const N = Object.fromEntries(carregarNichos('nichos').map((n) => [n.id, n]));
 const sup = N.suplementos, pet = N.pet, fr = N.fraldas;
 
 test('nichos carregam em ordem de prioridade', () => {
-  assert.deepEqual(carregarNichos('nichos').map((n) => n.id), ['suplementos', 'pet', 'fraldas']);
+  assert.deepEqual(carregarNichos('nichos').map((n) => n.id), ['pet', 'suplementos', 'fraldas']);
 });
 
 test('suplementos: creatina e whey, preço por 100 g', () => {
@@ -150,8 +150,8 @@ test('rodada completa: 3 nichos, posta só queda real, respeita limite por nicho
   assert.equal(hist['shopee:4'], undefined); // loja com poucas vendas fica de fora
   assert.ok(existsSync(`${pasta}/dados/pet-historico.json`));
   const html = readFileSync(`${pasta}/site/index.html`, 'utf8');
-  assert.ok(html.indexOf('id="suplementos"') < html.indexOf('id="pet"'));
-  assert.ok(html.indexOf('id="pet"') < html.indexOf('id="fraldas"'));
+  assert.ok(html.indexOf('id="pet"') < html.indexOf('id="suplementos"'));
+  assert.ok(html.indexOf('id="suplementos"') < html.indexOf('id="fraldas"'));
   assert.match(html, /R\$\s?1,25/);
   // rodar de novo no mesmo dia não repete o post
   await rodar({ nichosDir: `${pasta}/nichos`, dadosDir: `${pasta}/dados`, siteDir: `${pasta}/site`, painelArq: `${pasta}/metricas.csv`, env, fontes: [fonte], telegram, agora: new Date('2026-11-09T18:00:00Z'), log: () => {} });
@@ -202,4 +202,38 @@ test('métricas: rodadas do mesmo dia somam posts', async () => {
   atualizarMetricas(arq, [{ data: '2026-11-09', nicho: 'pet', anuncios: 10, ofertas: 1, posts: 1, inscritos: 5 }]);
   atualizarMetricas(arq, [{ data: '2026-11-09', nicho: 'pet', anuncios: 8, ofertas: 2, posts: 2, inscritos: null }]);
   assert.equal(readFileSync(arq, 'utf8'), 'data,nicho,anuncios,ofertas,posts,inscritos,cliques,comissao\n2026-11-09,pet,10,2,3,5,,\n');
+});
+
+test('pet: acessórios por unidade (fonte, arranhador, brinquedo) e petisco por 100 g', () => {
+  const f = analisar({ titulo: 'Fonte Bebedouro Elétrica para Gatos 2L com Filtro', preco: 89.9 }, pet);
+  assert.equal(f.categoria, 'fonte-agua');
+  assert.equal(f.pu, 89.9);
+  assert.equal(analisar({ titulo: 'Kit 4 Refil Filtro de Reposição Fonte Gatos', preco: 30 }, pet), null);
+  assert.equal(analisar({ titulo: 'Arranhador para Gatos Torre 3 andares com brinquedo', preco: 159 }, pet).categoria, 'arranhador');
+  const b = analisar({ titulo: 'Kit 2 Varinha Brinquedo para Gatos com Penas', preco: 19.9 }, pet);
+  assert.equal(b.categoria, 'brinquedo');
+  assert.equal(b.quantidade, 2);
+  const p = analisar({ titulo: 'Petisco Bifinho para Cachorro Carne 500g', preco: 24.9 }, pet);
+  assert.equal(p.categoria, 'petisco');
+  assert.equal(p.pu, 4.98);
+  assert.equal(analisar({ titulo: 'Ração Úmida Sachê Gatos 85g', preco: 3 }, pet), null);
+});
+
+test('página Produtos dos vídeos usa videos.json', async () => {
+  const { writeFileSync } = await import('node:fs');
+  const pasta = mkdtempSync(`${tmpdir()}/radar-v-`);
+  cpSync('nichos', `${pasta}/nichos`, { recursive: true });
+  writeFileSync(`${pasta}/videos.json`, JSON.stringify([
+    { id: '014-gato-agua', titulo: 'Por que gatos preferem água corrente', data: '2026-11-12', link: 'https://youtube.com/shorts/x', produtos: [{ nicho: 'pet', categoria: 'fonte-agua' }, { nicho: 'pet', categoria: 'arranhador' }] },
+  ]));
+  const fonte = { async buscar() { return [
+    { id: 'shopee:1', loja: 'Shopee', titulo: 'Fonte Bebedouro Elétrica Gatos 2L', preco: 89.9, vendas: 900, nota: 4.8, vendedor: 'a', link: 'https://s.shopee.com.br/f1' },
+    { id: 'shopee:2', loja: 'Shopee', titulo: 'Fonte de Água para Gatos Inox 3L', preco: 149.9, vendas: 3000, nota: 4.9, vendedor: 'b', link: 'https://s.shopee.com.br/f2' },
+  ]; } };
+  await rodar({ nichosDir: `${pasta}/nichos`, dadosDir: `${pasta}/dados`, siteDir: `${pasta}/site`, painelArq: `${pasta}/m.csv`, videosArq: `${pasta}/videos.json`, env: {}, fontes: [fonte], telegram: null, agora: dia(12), log: () => {} });
+  const html = readFileSync(`${pasta}/site/videos.html`, 'utf8');
+  assert.match(html, /Por que gatos preferem água corrente/);
+  assert.ok(html.indexOf('Inox 3L') < html.indexOf('Elétrica Gatos 2L')); // mais vendido primeiro
+  assert.match(html, /Arranhador<\/h3><p class="muted">Sem oferta confiável agora/);
+  assert.match(readFileSync(`${pasta}/site/index.html`, 'utf8'), /href="videos.html"/);
 });

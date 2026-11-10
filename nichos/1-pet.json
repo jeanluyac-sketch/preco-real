@@ -1,0 +1,304 @@
+{
+  "id": "pet",
+  "nome": "Pet",
+  "prioridade": 1,
+  "ativo": true,
+  "canalTelegram": "TELEGRAM_CANAL_PET",
+  "postsPorRodada": 3,
+  "excluir": [
+    "amostra",
+    "capa",
+    "adesivo",
+    "quadro",
+    "camiseta",
+    "caneca",
+    "chaveiro",
+    "livro"
+  ],
+  "categorias": [
+    {
+      "id": "racao-caes",
+      "nome": "Ração para cães",
+      "busca": [
+        "ração cães adultos 15kg",
+        "ração cachorro 10,1kg",
+        "ração premium especial cães"
+      ],
+      "incluir": [
+        "racao"
+      ],
+      "exigir": [
+        "cao",
+        "caes",
+        "cachorro",
+        "cachorros",
+        "dog",
+        "dogs"
+      ],
+      "excluir": [
+        "umida",
+        "sache",
+        "saches",
+        "lata",
+        "petisco",
+        "petiscos",
+        "comedouro",
+        "pote",
+        "porta racao",
+        "dispenser"
+      ],
+      "medida": "peso",
+      "por": 1000,
+      "faixa": [
+        5,
+        120
+      ]
+    },
+    {
+      "id": "racao-gatos",
+      "nome": "Ração para gatos",
+      "busca": [
+        "ração gatos adultos 10,1kg",
+        "ração gato castrado 10kg",
+        "ração premium especial gatos"
+      ],
+      "incluir": [
+        "racao"
+      ],
+      "exigir": [
+        "gato",
+        "gatos",
+        "felino",
+        "felinos",
+        "cat",
+        "cats"
+      ],
+      "excluir": [
+        "umida",
+        "sache",
+        "saches",
+        "lata",
+        "petisco",
+        "petiscos",
+        "comedouro",
+        "pote",
+        "porta racao",
+        "dispenser"
+      ],
+      "medida": "peso",
+      "por": 1000,
+      "faixa": [
+        6,
+        150
+      ]
+    },
+    {
+      "id": "areia-gatos",
+      "nome": "Areia para gatos",
+      "busca": [
+        "areia higiênica gatos 12kg",
+        "areia sílica gatos",
+        "areia de madeira pellets gatos"
+      ],
+      "incluir": [
+        "areia",
+        "granulado"
+      ],
+      "exigir": [
+        "gato",
+        "gatos",
+        "felino",
+        "higienica",
+        "sanitaria"
+      ],
+      "excluir": [
+        "caixa de areia",
+        "caixa",
+        "banheiro",
+        "pa",
+        "peneira",
+        "tapete"
+      ],
+      "medida": "peso",
+      "por": 1000,
+      "faixa": [
+        1,
+        60
+      ],
+      "subtipos": [
+        {
+          "id": "sílica",
+          "padrao": "silica"
+        },
+        {
+          "id": "madeira",
+          "padrao": "madeira|pellet|pinus"
+        },
+        {
+          "id": "bentonita",
+          "padrao": "bentonita|argila|aglomerante"
+        }
+      ]
+    },
+    {
+      "id": "petisco",
+      "nome": "Petiscos",
+      "busca": [
+        "petisco para cachorro",
+        "bifinho cães",
+        "petisco gato churu",
+        "snack para gatos"
+      ],
+      "incluir": [
+        "petisco",
+        "petiscos",
+        "bifinho",
+        "bifinhos",
+        "snack",
+        "snacks",
+        "churu"
+      ],
+      "exigir": [
+        "cao",
+        "caes",
+        "cachorro",
+        "cachorros",
+        "gato",
+        "gatos",
+        "dog",
+        "cat",
+        "pet",
+        "felino"
+      ],
+      "excluir": [
+        "racao",
+        "pote",
+        "porta",
+        "brinquedo"
+      ],
+      "medida": "peso",
+      "por": 100,
+      "faixa": [
+        1,
+        80
+      ]
+    },
+    {
+      "id": "fonte-agua",
+      "nome": "Fonte de água",
+      "busca": [
+        "fonte de água para gatos",
+        "bebedouro fonte elétrica pet",
+        "fonte bebedouro gato filtro"
+      ],
+      "incluir": [
+        "fonte",
+        "bebedouro"
+      ],
+      "exigir": [
+        "gato",
+        "gatos",
+        "cao",
+        "caes",
+        "cachorro",
+        "pet",
+        "felino"
+      ],
+      "excluir": [
+        "refil",
+        "filtro de reposicao",
+        "filtros de reposicao",
+        "bomba de reposicao",
+        "kit filtro",
+        "so filtro"
+      ],
+      "medida": "item",
+      "por": 1,
+      "rotulo": "unidade",
+      "faixa": [
+        25,
+        700
+      ],
+      "ranking": "vendas"
+    },
+    {
+      "id": "arranhador",
+      "nome": "Arranhador",
+      "busca": [
+        "arranhador para gatos",
+        "arranhador gato torre",
+        "arranhador de papelão gato"
+      ],
+      "incluir": [
+        "arranhador",
+        "arranhadores"
+      ],
+      "exigir": [
+        "gato",
+        "gatos",
+        "felino",
+        "cat"
+      ],
+      "excluir": [
+        "refil",
+        "sisal avulso",
+        "corda de sisal",
+        "adesivo"
+      ],
+      "medida": "item",
+      "por": 1,
+      "rotulo": "unidade",
+      "faixa": [
+        15,
+        900
+      ],
+      "ranking": "vendas"
+    },
+    {
+      "id": "brinquedo",
+      "nome": "Brinquedos",
+      "busca": [
+        "brinquedo para gato",
+        "brinquedo interativo cachorro",
+        "brinquedo mordedor cães",
+        "varinha para gatos"
+      ],
+      "incluir": [
+        "brinquedo",
+        "brinquedos",
+        "mordedor",
+        "varinha",
+        "bolinha",
+        "comedouro lento",
+        "tapete de lamber",
+        "tapete de farejar"
+      ],
+      "exigir": [
+        "gato",
+        "gatos",
+        "cao",
+        "caes",
+        "cachorro",
+        "pet",
+        "felino",
+        "dog",
+        "cat"
+      ],
+      "excluir": [
+        "racao",
+        "fantasia",
+        "roupa",
+        "arranhador"
+      ],
+      "medida": "item",
+      "por": 1,
+      "rotulo": "unidade",
+      "faixa": [
+        5,
+        400
+      ],
+      "ranking": "vendas"
+    }
+  ],
+  "marcasConfiaveis": []
+}
