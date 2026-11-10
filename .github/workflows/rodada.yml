@@ -37,6 +37,8 @@ jobs:
           git add dados/ metricas.csv
           git diff --cached --quiet || git commit -m "precos: $(date -u +%FT%H%M)"
           git push
+      - name: Copiar páginas estáticas (Sabia Disso)
+        run: mkdir -p site && cp -r estatico/. site/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site
